@@ -1,0 +1,155 @@
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4 data.dat
+>>
+n = 4
+data file = data.dat
+-92.730 43.762 65.31 -68.878 -7.56 -78.895 29.71 -26.198 17.023 89.191
+66.07 5.36 -11.130 8.112 -71.783 -44.20 -40.28 -4.692 -65.91 -21.631  
+-75.82 -39.10 49.375 -88.391 -66.77 -2.405 -73.94 55.789 70.94 -38.90 
+number of datapoints = 30
+
+average 0 = -13.134001
+average 1 = 8.158500
+average 2 = -22.505749
+average 4 = -20.735748
+average 6 = 27.431499
+average 7 = 36.521500
+average 8 = 44.410999
+average 9 = 37.372749
+average 11 = -17.360249
+average 12 = -29.750248
+average 13 = -37.037750
+average 15 = -38.770500
+average 16 = -33.128250
+average 17 = -42.013252
+average 18 = -50.615250
+average 19 = -21.793999
+average 20 = -38.484001
+average 21 = -36.221497
+average 22 = -27.047749
+average 23 = -57.876499
+average 24 = -21.831497
+average 25 = 12.596001
+average 26 = 3.472250
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe
+>> 
+Invalid arguments. Usage: C:\Users\User\Downloads\CA1\movavg.exe <integer> <string>
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4
+Invalid arguments. Usage: C:\Users\User\Downloads\CA1\movavg.exe <integer> <string>
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4 nonexistent.dat
+>>
+n = 4
+data file = nonexistent.dat
+cannot open: No such file or directory
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe -3 data.dat
+n = -3
+data file = data.dat
+-92.730 43.762 65.31 -68.878 -7.56 -78.895 29.71 -26.198 17.023 89.191
+66.07 5.36 -11.130 8.112 -71.783 -44.20 -40.28 -4.692 -65.91 -21.631
+-75.82 -39.10 49.375 -88.391 -66.77 -2.405 -73.94 55.789 70.94 -38.90
+number of datapoints = 30
+
+average 0 = -0.000000
+average 1 = -0.000000
+average 2 = -0.000000
+average 3 = -0.000000
+average 4 = -0.000000
+average 5 = -0.000000
+average 6 = -0.000000
+average 7 = -0.000000
+average 9 = -0.000000
+average 10 = -0.000000
+average 11 = -0.000000
+average 12 = -0.000000
+average 13 = -0.000000
+average 14 = -0.000000
+average 15 = -0.000000
+average 16 = -0.000000
+average 17 = -0.000000
+average 18 = -0.000000
+average 19 = -0.000000
+average 20 = -0.000000
+average 21 = -0.000000
+average 22 = -0.000000
+average 23 = -0.000000
+average 24 = -0.000000
+average 25 = -0.000000
+average 26 = -0.000000
+average 27 = -0.000000
+average 28 = -0.000000
+average 29 = -0.000000
+average 30 = -0.000000
+average 31 = -0.000000
+average 32 = -0.000000
+average 33 = -0.000000
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 0 data.dat
+n = 0
+data file = data.dat
+-92.730 43.762 65.31 -68.878 -7.56 -78.895 29.71 -26.198 17.023 89.191
+66.07 5.36 -11.130 8.112 -71.783 -44.20 -40.28 -4.692 -65.91 -21.631
+-75.82 -39.10 49.375 -88.391 -66.77 -2.405 -73.94 55.789 70.94 -38.90
+number of datapoints = 30
+
+average 0 = -nan(ind)
+average 1 = -nan(ind)
+average 2 = -nan(ind)
+average 3 = -nan(ind)
+average 4 = -nan(ind)
+average 6 = -nan(ind)
+average 7 = -nan(ind)
+average 8 = -nan(ind)
+average 9 = -nan(ind)
+average 10 = -nan(ind)
+average 11 = -nan(ind)
+average 13 = -nan(ind)
+average 15 = -nan(ind)
+average 17 = -nan(ind)
+average 18 = -nan(ind)
+average 19 = -nan(ind)
+average 20 = -nan(ind)
+average 21 = -nan(ind)
+average 23 = -nan(ind)
+average 24 = -nan(ind)
+average 25 = -nan(ind)
+average 26 = -nan(ind)
+average 27 = -nan(ind)
+average 29 = -nan(ind)
+average 30 = -nan(ind)
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 999 data.dat
+n = 999
+data file = data.dat
+66.07 5.36 -11.130 8.112 -71.783 -44.20 -40.28 -4.692 -65.91 -21.631
+-75.82 -39.10 49.375 -88.391 -66.77 -2.405 -73.94 55.789 70.94 -38.90
+number of datapoints = 30
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe abc data.dat
+First argument must be a valid integer.
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4.5 data.dat
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4 bad1.dat
+n = 4
+data file = bad1.dat
+10.5 20.3 hello 15.2 8.7
+number of datapoints = 2
+
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4 bad2.dat
+n = 4
+data file = bad2.dat
+
+number of datapoints = 0
+
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 4 bad3.dat
+n = 4
+data file = bad3.dat
+42.0
+number of datapoints = 1
+
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 2 bad1.dat
+n = 2
+data file = bad1.dat
+10.5 20.3 hello 15.2 8.7
+number of datapoints = 2
+
+average 0 = 15.400000
+(base) PS C:\Users\User\Downloads\CA1> ./movavg.exe 2 bad3.dat
+n = 2
+data file = bad3.dat
+42.0
+number of datapoints = 1
