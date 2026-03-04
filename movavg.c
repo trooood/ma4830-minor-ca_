@@ -18,7 +18,8 @@ int main(int argc, char *argv[]) {
     // convert 1st arg to long, base 10, endptr points to where it was converted
     int n = strtol(argv[1], &endptr, 10);
 
-    if (*endptr != '\0') {
+    // cannot be end of string and must be positive
+    if (*endptr != '\0' || n <= 0) {
         printf("First argument must be a valid integer.\n");
         return 1;
     }
@@ -38,8 +39,8 @@ int main(int argc, char *argv[]) {
     int count = 0;  // counts no. of data
 
     // cannot open file
-    if (fp == NULL) {
-        perror("cannot open");
+    if (fp == NULL) {  // file does not exist
+        perror("Cannot open file: No such file or directory");
         exit(1);
     }
 
@@ -67,15 +68,29 @@ int main(int argc, char *argv[]) {
 
     fclose(fp);  // close file
 
-    printf("\n");
-    printf("number of datapoints = %d\n", count);
+    // no data in file
+    if (count==0) {
+        printf("Error: File is empty or contains no valid float data.\n");
+        exit(1);
+
+    }
+    else {
+        printf("\n");
+        printf("number of datapoints = %d\n", count);
+    }
+
+    // check that n <= count
+    if (n > count) {
+        printf("Error: n must be smaller than number of datapoints.\n");
+        exit(1);
+    }
 
     // --- calculate moving average ---
     //int lenavg = count - n + 1;  // finds how big the array must be
     //printf("%d", lenavg);
     float averages[count];
 
-    for (int i = 0; i < n - 1; i++) {  // shift backwards by n-1 (based on how k and n are related)
+    for (int i = 0; i < n - 1; i++) {  // shift backwards by n-1 (based on how k and n are related) and pad with NANs
         averages[i] = NAN;
     }
 
