@@ -4,18 +4,31 @@
 
 int main(int argc, char *argv[]) {
 
-    // --- handle the inputs ---
+    // init stuff to handle inputs
     int n;
     char filename[256];
     FILE *fp = NULL;
     const int max_attempts=3;
     int attempts=0;
 
-    while (fp == NULL) {
+    // init stuff to save the data in
+    char buffer[256];  // for storing stuff per line
+    float data[1024];  // for storing data floats
+    char errors[1024][256];  // for storing bad data, 1024 strings with max length 256
+    int count = 0;  // counts no. of data
+
+    // --- handle the inputs ---
+    //while (fp == NULL || count == 0) {
+    while (attempts < max_attempts) {
+
         printf("Enter filename: ");
         if (scanf("%255s", filename) != 1) {
             printf("Error: Invalid filename input.\n");
-            return 1;
+            attempts++;
+            if (attempts >= max_attempts) {  // exit after max tries
+                printf("Too many failed attempts. Exiting.\n");
+                return 1;
+            }
         }
 
         fp = fopen(filename, "r");
@@ -28,68 +41,83 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        
+        //else {  // can get file
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {  // read 1 line
+            printf("%s", buffer);
+
+            char *ptr = buffer;  // points to start of buffer
+
+            while (*ptr != '\0') {
+                while (*ptr == ' ' || *ptr == ',' || *ptr == '\n') ptr++;  // skip space and newline
+                // handle bad data here
+                if (*ptr == '\0') break;  // stop if end of string
+
+                char *endptr;
+                float val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
+                if (ptr == endptr) {  // there is no values in between start and end pointers
+                    char *start = ptr;
+
+                    while (*ptr != ' ' && *ptr != ',' && *ptr != '\n' && *ptr != '\0')
+                        ptr++;
+
+                    printf("Invalid number: %.*s\n", (int)(ptr - start), start);
+                    break;
+                }
+
+                data[count++] = val;  // move to the next element
+                ptr = endptr;  // move pointer to where it was last buffered until
+
+            }
+            
+        }
+
+        fclose(fp);  // close file
+
+
+        //printf("\n");
+        // no data in file
+        if (fp != NULL && count==0) {
+            printf("Error: File is empty or contains no valid float data.\n");
+            attempts++;
+            if (attempts >= max_attempts) {  // exit after max tries
+                printf("Too many failed attempts. Exiting.\n");
+                return 1;
+            }
+        }
+
+        break;
+    
     }
 
     // --- handling the data stuff ---
+    attempts=0;
 
-    // init stuff to save the data in
-    char buffer[256];  // for storing stuff per line
-    float data[1024];  // for storing data floats
-    int count = 0;  // counts no. of data
-
-    /*
-    // cannot open file
-    fp = fopen(filename, "r");
-    if (fp == NULL) {  // file does not exist
-        printf("Cannot open file: No such file or directory.\n");
-        exit(1);
-    }
-    */
-
-    //else {  // can get file
-    while (fgets(buffer, sizeof(buffer), fp) != NULL) {  // read 1 line
-        printf("%s", buffer);
-
-        char *ptr = buffer;  // points to start of buffer
-
-        while (*ptr != '\0') {
-            while (*ptr == ' ' || *ptr == '\n') ptr++;  // skip space and newline
-            // handle bad data here
-            if (*ptr == '\0') break;  // stop if end of string
-
-            char *endptr;
-            float val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
-            if (ptr == endptr) break;  // there is no values in between start and end pointers
-            
-            data[count++] = val;  // move to the next element
-            ptr = endptr;  // move pointer to where it was last buffered until
-
-        }
-    }
-    
-    fclose(fp);  // close file
-
-    printf("\n");
-    // no data in file
-    if (count==0) {
-        printf("Error: File is empty or contains no valid float data.\n");
-        exit(1);
-    }
-
-    //printf("\n");
+    printf("\n");  
     //printf("number of datapoints = %d\n", count);
     // enter n
-    printf("Enter window size n: ");
-    if (scanf("%d", &n) != 1 || n <= 0) {
-        printf("First input must be a valid positive integer.\n");
-        return 1;
-    }
+    while (attempts < max_attempts) {
+        printf("Enter window size n: ");
+        if (scanf("%d", &n) != 1 || n <= 0) {
+            printf("First input must be a valid positive integer.\n");
+            attempts++;
+            if (attempts >= max_attempts) {  // exit after max tries
+                printf("Too many failed attempts. Exiting.\n");
+                return 1;
+            }
+        }
 
-    // check that n <= count
-    if (n > count) {
-        printf("Error: n must be smaller than number of datapoints.\n");
-        exit(1);
+        // check that n <= count
+        else if (n > count) {
+            printf("Error: n must be smaller than number of datapoints.\n");
+            attempts++;
+            if (attempts >= max_attempts) {  // exit after max tries
+                printf("Too many failed attempts. Exiting.\n");
+                return 1;
+            }
+        }
+
+        else break;
+
     }
 
     // --- calculate moving average ---
@@ -101,7 +129,6 @@ int main(int argc, char *argv[]) {
         averages[i] = NAN;
     }
 
-    //for (int k=0; k <= (count-n); k++) {
     for (int k=0; k <= count -n; k++) {
         float sum = 0;  // sum k values
         for (int i=0; i<n; i++) {
@@ -113,15 +140,15 @@ int main(int argc, char *argv[]) {
     // print averages
     //printf("\n");
 
-    char *hline = "|--------+------------+----------------|\n";
+    char *hline = "|--------+----------------+----------------|\n";
     printf("\n");
     printf("%s", hline);
-    printf("| Number | Raw Data   | Moving Average |\n");
+    printf("| Number | Raw Data       | Moving Average |\n");
     printf("%s", hline);
     for (int i = 0; i < count; i++) {
         //printf("average %d = %f\n", i, averages[i]);
         //printf("| %6d | %10.5f | %14.5f |\n", i, data[i], averages[i]);
-        printf("| %6d | %10.5f | ", i, data[i]);
+        printf("| %6d | %14.5f | ", i, data[i]);
         
         if (isnan(averages[i])) printf("%14s |\n", "-");
         else printf("%14.5f |\n", averages[i]);
