@@ -5,6 +5,24 @@
 int main(int argc, char *argv[]) {
 
     // --- handle the inputs ---
+    int n;
+    char filename[256];
+    FILE *fp;
+
+    printf("Enter window size n: ");
+    if (scanf("%d", &n) != 1 || n <= 0) {
+        printf("First input must be a valid positive integer.\n");
+        return 1;
+    }
+
+    printf("Enter filename: ");
+    if (scanf("%255s", filename) != 1) {
+        printf("Invalid filename input.\n");
+        return 1;
+    }
+
+    /*
+    // --- handle the inputs ---
 
     char *endptr;
 
@@ -27,9 +45,10 @@ int main(int argc, char *argv[]) {
     // assign filename string
     char *filename = argv[2];  // points to the data
     FILE *fp = fopen(filename, "r");  // open buffered file! read only
+    */
 
-    printf("n = %d\n", n);
-    printf("data file = %s\n", filename);
+    //printf("n = %d\n", n);
+    //printf("data file = %s\n", filename);
 
     // --- handling the data stuff ---
 
@@ -39,6 +58,7 @@ int main(int argc, char *argv[]) {
     int count = 0;  // counts no. of data
 
     // cannot open file
+    fp = fopen(filename, "r");
     if (fp == NULL) {  // file does not exist
         perror("Cannot open file: No such file or directory");
         exit(1);
