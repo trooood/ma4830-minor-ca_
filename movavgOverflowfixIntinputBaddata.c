@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
                 printf("Too many failed attempts. Exiting.\n");
                 return 1;
             }
+            continue;
         }
 
         fp = fopen(filename, "r");
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
                 printf("Too many failed attempts. Exiting.\n");
                 return 1;
             }
+            continue;
         }
 
         //else {  // can get file
@@ -62,15 +64,15 @@ int main(int argc, char *argv[]) {
                     while (*ptr != ' ' && *ptr != ',' && *ptr != '\n' && *ptr != '\0')
                         ptr++;
 
-                    printf("Invalid number: %.*s\n", (int)(ptr - start), start);
+                    printf("Invalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
                     continue;
                 }
                 
-                if (count<MAX_DATA){ //if not over buffer, continue
+                if (count<MAX_DATA){  //if not over buffer, continue
                     data[count++] = val;  // move to the next element
                     ptr = endptr;  // move pointer to where it was last buffered until
                 }
-                else { //else print error
+                else {  //else print error
                     printf("Warning: Data exceeds maximum of %d samples. Proceeding with first %d values.\n", MAX_DATA, count);  // Error message
                     overflow = 1;
                     break;                     // breaks inner while
