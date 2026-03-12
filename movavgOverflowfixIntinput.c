@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
                 printf("Too many failed attempts. Exiting.\n");
                 return 1;
             }
+            continue;
         }
 
         fp = fopen(filename, "r");
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
                 printf("Too many failed attempts. Exiting.\n");
                 return 1;
             }
+            continue;
         }
 
         //else {  // can get file
