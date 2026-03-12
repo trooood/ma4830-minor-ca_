@@ -23,6 +23,13 @@ int main(int argc, char *argv[]) {
     char extra;
     char *hline;
     float averages[MAX_DATA];
+    char input[256];
+    float sum;
+    char *endptr; //must declare type here or qnx dies
+    float raw_sum, raw_mean, raw_variance, raw_stddev;
+    float filt_sum, filt_mean, filt_variance, filt_stddev;
+    int valid_filtered_count;
+    float variance_reduction, stddev_reduction;
 
     // --- handle the inputs ---
     //while (fp == NULL || count == 0) {
@@ -65,15 +72,10 @@ int main(int argc, char *argv[]) {
                 // handle bad data here
                 if (*ptr == '\0') break;  // stop if end of string
 
-<<<<<<< HEAD
-                char *endptr;
                 errno = 0;
-                float val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
+                val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
 
                 // invalid data stuff
-=======
-                val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
->>>>>>> db7da5f (Formatted the change for QNX; incl fix in latest file with the fixintinput.c;recommend name change because its hard to read and tell)
                 if (ptr == endptr) {  // there is no values in between start and end pointers
                     char *start = ptr;
 
@@ -131,36 +133,40 @@ int main(int argc, char *argv[]) {
 
     // --- handling the data stuff ---
     attempts=0;
+    while (getchar() != '\n');   /* flush leftover from filename scanf */
 
-    printf("\n");  
+        printf("\n");  
     //printf("number of datapoints = %d\n", count);
     // enter n
     while (attempts < max_attempts) {
         printf("Enter window size n: ");
-        if (scanf("%d%c", &n, &extra) != 2 || (extra != '\n' && extra != '\r') || n <= 0){
-            // %d - gets the int, %c - gets anything after that if it's not a '\n'
+        if (fgets(input, sizeof(input), stdin) == NULL) {
             printf("Input must be a valid positive integer.\n");
             attempts++;
-            while (getchar() != '\n');  // clear remaining input
-            if (attempts >= max_attempts) {  // exit after max tries
+            if (attempts >= max_attempts) {
                 printf("Too many failed attempts. Exiting.\n");
                 return 1;
             }
-            
+            continue;
         }
-
-        // check that n <= count
-        else if (n > count || (extra != '\n' && extra != '\r')) {
-            printf("Error: n must be smaller than number of datapoints.\n");
-            attempts++;
-            if (attempts >= max_attempts) {  // exit after max tries
-                printf("Too many failed attempts. Exiting.\n");
-                return 1;
+        if (sscanf(input, "%d%c", &n, &extra) == 2 && extra == '\n' && n > 0) {
+            if (n > count) {
+                printf("Error: n must be smaller than number of datapoints.\n");
+                attempts++;
+                if (attempts >= max_attempts) {
+                    printf("Too many failed attempts. Exiting.\n");
+                    return 1;
+                }
+                continue;
             }
+            break;
         }
-
-        else break;
-
+        printf("Input must be a valid positive integer.\n");
+        attempts++;
+        if (attempts >= max_attempts) {
+            printf("Too many failed attempts. Exiting.\n");
+            return 1;
+        }
     }
 
     // --- calculate moving average ---
@@ -172,7 +178,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (k=0; k <= count -n; k++) {
-        float sum = 0;  // sum k values
+        sum = 0;  // sum k values
         for (i=0; i<n; i++) {
             sum += data[k+i];
         }
@@ -203,12 +209,12 @@ int main(int argc, char *argv[]) {
     printf("=== Fluctuation Analysis ===\n");
 
     // init for calculations
-    float raw_sum = 0, raw_mean = 0, raw_variance = 0, raw_stddev = 0;
-    float filt_sum = 0, filt_mean = 0, filt_variance = 0, filt_stddev = 0;
-    int valid_filtered_count = 0;
+    raw_sum = 0, raw_mean = 0, raw_variance = 0, raw_stddev = 0;
+    filt_sum = 0, filt_mean = 0, filt_variance = 0, filt_stddev = 0;
+    valid_filtered_count = 0;
 
     // raw data sum
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) { // i has already been declared an integer pls just use i or else qnx will just shit itself <3
         raw_sum += data[i];
     }
     
@@ -216,7 +222,7 @@ int main(int argc, char *argv[]) {
     raw_mean = raw_sum / count;
 
     // filtered data sum
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         if (!isnan(averages[i])) {
             filt_sum += averages[i];
             valid_filtered_count++;
@@ -227,14 +233,14 @@ int main(int argc, char *argv[]) {
     filt_mean = filt_sum / valid_filtered_count;
 
     // raw data std and variance
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         raw_variance += pow(data[i] - raw_mean, 2);
     }
     raw_variance = raw_variance / count;
     raw_stddev = sqrt(raw_variance);
 
     // filtered data std and variance
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         if (!isnan(averages[i])) {
             filt_variance += pow(averages[i] - filt_mean, 2);
         }
@@ -258,8 +264,8 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     //calculate percentage difference in variance and std
-    float variance_reduction = ((raw_variance - filt_variance) / raw_variance) * 100;
-    float stddev_reduction = ((raw_stddev - filt_stddev) / raw_stddev) * 100;
+    variance_reduction = ((raw_variance - filt_variance) / raw_variance) * 100;
+    stddev_reduction = ((raw_stddev - filt_stddev) / raw_stddev) * 100;
 
     printf("Reduction in Variance: %.2f%%\n", variance_reduction);
     printf("Reduction in Std Devation: %.2f%%\n", stddev_reduction);
@@ -285,8 +291,6 @@ int main(int argc, char *argv[]) {
     }
 
 
-
-
     
-    return 0;
+    return 0; //Use return not exit
 }

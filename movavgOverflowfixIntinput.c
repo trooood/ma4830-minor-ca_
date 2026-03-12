@@ -193,7 +193,6 @@ int main(int argc, char *argv[]) {
         raw_sum += data[i];
     }
     
-<<<<<<< HEAD
     // raw data mean
     raw_mean = raw_sum / count;
 
@@ -266,8 +265,5 @@ int main(int argc, char *argv[]) {
         printf("\nFiltered values do not have reduced fluctuation.\n");
     }
 
-    exit(0);
-=======
     return 0;
->>>>>>> db7da5f (Formatted the change for QNX; incl fix in latest file with the fixintinput.c;recommend name change because its hard to read and tell)
 }
