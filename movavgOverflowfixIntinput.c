@@ -168,8 +168,91 @@ int main(int argc, char *argv[]) {
     }
     printf("%s", hline);
 
-    
+        // fluctuation analysis
+    printf("\n");
+    printf("=== Fluctuation Analysis ===\n");
 
+    // init for calculations
+    float raw_sum = 0, raw_mean = 0, raw_variance = 0, raw_stddev = 0;
+    float filt_sum = 0, filt_mean = 0, filt_variance = 0, filt_stddev = 0;
+    int valid_filtered_count = 0;
+
+    // raw data sum
+    for (int i = 0; i < count; i++) {
+        raw_sum += data[i];
+    }
     
+    // raw data mean
+    raw_mean = raw_sum / count;
+
+    // filtered data sum
+    for (int i = 0; i < count; i++) {
+        if (!isnan(averages[i])) {
+            filt_sum += averages[i];
+            valid_filtered_count++;
+        }
+    }
+    
+    //filtered data mean
+    filt_mean = filt_sum / valid_filtered_count;
+
+    // raw data std and variance
+    for (int i = 0; i < count; i++) {
+        raw_variance += pow(data[i] - raw_mean, 2);
+    }
+    raw_variance = raw_variance / count;
+    raw_stddev = sqrt(raw_variance);
+
+    // filtered data std and variance
+    for (int i = 0; i < count; i++) {
+        if (!isnan(averages[i])) {
+            filt_variance += pow(averages[i] - filt_mean, 2);
+        }
+    }
+    filt_variance = filt_variance / valid_filtered_count;
+    filt_stddev = sqrt(filt_variance);
+
+    // results
+    printf("\n");
+    printf("|-------------------------+-------------------------|\n");
+    printf("|         Raw Data        |      Filtered Data      |\n");
+    printf("|-------------------------+-------------------------|\n");
+    printf("| Mean: %14.5f    | Mean: %14.5f    |\n", raw_mean, filt_mean);
+    printf("| Variance: %11.5f   | Variance: %11.5f   |\n", raw_variance, filt_variance);
+    printf("| Std Dev: %12.5f   | Std Dev: %12.5f   |\n", raw_stddev, filt_stddev);
+    printf("|-------------------------+-------------------------|\n");
+
+    // comparison
+    printf("\n");
+    printf("=== Comparison ===\n");
+    printf("\n");
+
+    //calculate percentage difference in variance and std
+    float variance_reduction = ((raw_variance - filt_variance) / raw_variance) * 100;
+    float stddev_reduction = ((raw_stddev - filt_stddev) / raw_stddev) * 100;
+
+    printf("Reduction in Variance: %.2f%%\n", variance_reduction);
+    printf("Reduction in Std Devation: %.2f%%\n", stddev_reduction);
+
+    //comments on fluctuation reduction
+    if (filt_variance < raw_variance) {
+        printf("\nFiltered values have reduced fluctuation.\n");
+        if (variance_reduction > 50) {
+            printf("Extremely effective fluctuation reduction.\n");
+        }
+        else if (variance_reduction > 25) {
+            printf("Very effective fluctuation reduction.\n");
+        }
+        else if (variance_reduction > 10) {
+            printf("Effective fluctuation reduction.\n");
+        }
+        else {
+            printf("Slightly effective fluctuation reduction. Try larger window size.\n");
+        }
+    }
+    else {
+        printf("\nFiltered values do not have reduced fluctuation.\n");
+    }
+
     exit(0);
 }
