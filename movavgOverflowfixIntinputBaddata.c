@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>  // for ascii string to long (strtol)
 #include <math.h>    // for NANs
+#include <errno.h>
 #define MAX_DATA 1024 // Maximum number of sensor readings (For buffer changes)
 
 int main(int argc, char *argv[]) {
@@ -57,6 +58,7 @@ int main(int argc, char *argv[]) {
                 if (*ptr == '\0') break;  // stop if end of string
 
                 char *endptr;
+                errno = 0;
                 float val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
 
                 // invalid data stuff
@@ -69,13 +71,26 @@ int main(int argc, char *argv[]) {
                     printf("Invalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
                     continue;
                 }
+
+                else if (errno == ERANGE || !isfinite(val)) {
+                    char *start = ptr;
+
+                    while (*ptr != ' ' && *ptr != ',' && *ptr != '\n' && *ptr != '\0')
+                        ptr++;
+
+                    printf("Invalid number (infinity): %.*s; skipping datapoint\n",
+                        (int)(ptr - start), start);
+
+                    errno = 0;   // reset error flag
+                    continue;
+                }
+               
                 
-                // overflow stuff
-                if (count<MAX_DATA){  //if not over buffer, continue
+                else if (count<MAX_DATA){  //if not over buffer, continue
                     data[count++] = val;  // move to the next element
                     ptr = endptr;  // move pointer to where it was last buffered until
                 }
-                else {  //else print error
+                else {  //else overflow
                     printf("Warning: Data exceeds maximum of %d samples. Proceeding with first %d values.\n", MAX_DATA, count);  // Error message
                     overflow = 1;
                     break;                     // breaks inner while
@@ -172,7 +187,7 @@ int main(int argc, char *argv[]) {
     }
     printf("%s", hline);
 
-    
+
         // fluctuation analysis
     printf("\n");
     printf("=== Fluctuation Analysis ===\n");
