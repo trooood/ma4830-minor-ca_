@@ -19,6 +19,10 @@ int main(int argc, char *argv[]) {
     float data[MAX_DATA];  // for storing data floats
     char errors[MAX_DATA][256];  // for storing bad data, 1024 strings with max length 256
     int count = 0;  // counts no. of data
+    int i, k;
+    char extra;
+    char *hline;
+    float averages[MAX_DATA];
 
     // --- handle the inputs ---
     //while (fp == NULL || count == 0) {
@@ -48,20 +52,28 @@ int main(int argc, char *argv[]) {
 
         //else {  // can get file
         while (fgets(buffer, sizeof(buffer), fp) != NULL && !overflow) {  // read 1 line
+            char *ptr = buffer;  // points to start of buffer
+             
+            char *endptr;
+            float val;
+
             printf("%s", buffer);
 
-            char *ptr = buffer;  // points to start of buffer
 
             while (*ptr != '\0') {
                 while (*ptr == ' ' || *ptr == ',' || *ptr == '\n') ptr++;  // skip space and newline
                 // handle bad data here
                 if (*ptr == '\0') break;  // stop if end of string
 
+<<<<<<< HEAD
                 char *endptr;
                 errno = 0;
                 float val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
 
                 // invalid data stuff
+=======
+                val = strtof(ptr, &endptr);  // start reading at ptr and end save end at &endptr
+>>>>>>> db7da5f (Formatted the change for QNX; incl fix in latest file with the fixintinput.c;recommend name change because its hard to read and tell)
                 if (ptr == endptr) {  // there is no values in between start and end pointers
                     char *start = ptr;
 
@@ -119,14 +131,13 @@ int main(int argc, char *argv[]) {
 
     // --- handling the data stuff ---
     attempts=0;
-    char extra;
 
     printf("\n");  
     //printf("number of datapoints = %d\n", count);
     // enter n
     while (attempts < max_attempts) {
         printf("Enter window size n: ");
-        if (scanf("%d%c", &n, &extra) != 2 || extra != '\n' || n <= 0) {
+        if (scanf("%d%c", &n, &extra) != 2 || (extra != '\n' && extra != '\r') || n <= 0){
             // %d - gets the int, %c - gets anything after that if it's not a '\n'
             printf("Input must be a valid positive integer.\n");
             attempts++;
@@ -139,7 +150,7 @@ int main(int argc, char *argv[]) {
         }
 
         // check that n <= count
-        else if (n > count || extra != '\n') {
+        else if (n > count || (extra != '\n' && extra != '\r')) {
             printf("Error: n must be smaller than number of datapoints.\n");
             attempts++;
             if (attempts >= max_attempts) {  // exit after max tries
@@ -155,15 +166,14 @@ int main(int argc, char *argv[]) {
     // --- calculate moving average ---
     //int lenavg = count - n + 1;  // finds how big the array must be
     //printf("%d", lenavg);
-    float averages[count];
 
-    for (int i = 0; i < n - 1; i++) {  // shift backwards by n-1 (based on how k and n are related) and pad with NANs
+    for (i = 0; i < n - 1; i++) {  // shift backwards by n-1 (based on how k and n are related) and pad with NANs
         averages[i] = NAN;
     }
 
-    for (int k=0; k <= count -n; k++) {
+    for (k=0; k <= count -n; k++) {
         float sum = 0;  // sum k values
-        for (int i=0; i<n; i++) {
+        for (i=0; i<n; i++) {
             sum += data[k+i];
         }
         averages[k + n-1] = sum / n;
@@ -172,12 +182,12 @@ int main(int argc, char *argv[]) {
     // print averages
     //printf("\n");
 
-    char *hline = "|--------+----------------+----------------|\n";
+    hline = "|--------+----------------+----------------|\n";
     printf("\n");
     printf("%s", hline);
     printf("| Number | Raw Data       | Moving Average |\n");
     printf("%s", hline);
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         //printf("average %d = %f\n", i, averages[i]);
         //printf("| %6d | %10.5f | %14.5f |\n", i, data[i], averages[i]);
         printf("| %6d | %14.5f | ", i, data[i]);
@@ -278,5 +288,5 @@ int main(int argc, char *argv[]) {
 
 
     
-    exit(0);
+    return 0;
 }

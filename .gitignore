@@ -1,2 +1,3 @@
 *.exe
 movavgtest.c
+sandbox/
