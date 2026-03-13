@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
                     while (*ptr != ' ' && *ptr != ',' && *ptr != '\n' && *ptr != '\0')
                         ptr++;
 
-                    printf("Invalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
+                    printf("\nInvalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
                     continue;
                 }
 
