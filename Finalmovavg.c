@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
                     while (*ptr != ' ' && *ptr != ',' && *ptr != '\n' && *ptr != '\0')
                         ptr++;
 
-                    printf("Invalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
+                    printf("\nInvalid number: %.*s; skipping datapoint\n", (int)(ptr - start), start);
                     continue;
                 }
 
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
     valid_filtered_count = 0;
 
     // raw data sum
-    for (i = 0; i < count; i++) { // i has already been declared an integer pls just use i or else qnx will just shit itself <3
+    for (i = 0; i < count; i++) {
         raw_sum += data[i];
     }
     
